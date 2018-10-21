@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>人物飘飞</title>
+	<style type="text/css">
+		html,body{
+			width: 100%;
+			height: 100%;
+			background-color: #ccc;
+			cursor: pointer;
+		}
+		div{
+			position: absolute;			
+			top: 50px;
+			left: 50px;
+			width: 100px;
+			height: 100px;			
+			background-image: url(images/1.gif);
+			background-repeat: no-repeat;
+		}			
+		input{
+			margin-left: 15px;
+		}	
+	</style>
+</head>
+<body>	
+	<input type="button" value="根据鼠标位置点击移动" />
+	<input type="button" value="根据鼠标移动轨迹移动" />
+	<div id="figure"></div>
+<script type="text/javascript">	
+	let clickList=document.getElementsByTagName('input'),
+		btn_click=clickList[0],
+		btn_move=clickList[1],
+		figure=document.getElementById('figure'),
+		flag_move=false,
+		flag_slide=false,
+		map=[];
+
+	btn_click.onclick=function(){
+		btn_move.value=btn_move.value.replace('(已激活)','')
+		this.value+='(已激活)';
+		flag_move=true;
+	}
+
+	btn_move.onclick=function(){
+		btn_click.value=btn_click.value.replace('(已激活)','');
+		this.value+='(已激活)'
+		flag_move=false;
+	}
+
+	document.body.addEventListener('mousedown',(e)=>{
+		flag_slide=true;
+		slide(e);
+	})
+
+	document.body.addEventListener('mousemove',slide)
+	
+	document.body.addEventListener('mouseup',end)
+
+	document.body.addEventListener('click',move);
+
+	function move(e){
+		if(!flag_move)return;
+		figure.style.transition='left,top,.3s';
+		let x=e.clientX,
+			y=e.clientY;
+		figure.style.left=x+'px';
+		figure.style.top=y+'px';
+	}
+
+	function slide(e){	
+		if(!flag_slide)return;
+		let x=e.clientX,
+			y=e.clientY;
+		map.push({x:x,y:y});
+	}
+
+	function end(e){	
+		flag_slide=false;
+		figure.style.transition='left,top,0s';
+		var timer = setInterval(function ()
+			{					
+				if(map.length == 0){
+					clearInterval(timer);
+					return;
+				}	
+				figure.style.left = map[0].x + "px";
+				figure.style.top = map[0].y + "px";
+				map.shift();
+			}, 30);			
+	}
+</script>
+</body>
+</html>

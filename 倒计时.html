@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>倒计时</title>
+	<style type="text/css">
+		div {
+		    margin: 30px auto;
+		    width: 300px;
+		    height: 100px;
+		    font-family: cursive;
+		    color: white;
+		    text-align: center;
+		    background-color: black;
+		    border-radius: 5px;
+		}
+		input{
+			display: inline-block;
+			margin: 20px 0;
+			width: 50px;
+			color: black;
+		}
+		button {
+		    width: 80px;
+		    height: 30px;
+		    color: white;		    
+		    border: none;
+		    border-radius: 5px;
+		    background-color: deepskyblue;
+		    cursor: pointer;
+		}
+		button:hover{
+			background-color: skyblue;
+		}
+	</style>
+</head>
+<body>
+	<div id="countdown">
+		<input type="number" id="minute" min="0" />分
+		<input type="number" id="second" max="60" min="0" />秒
+		<br>
+		<button>开始</button>	
+	</div>
+	<script type="text/javascript">
+		let btn=document.getElementsByTagName('button')[0],
+			input=document.getElementsByTagName('input'),
+			minute=input[0],
+			second=input[1],
+			timer=null;
+
+		btn.onclick=function(){
+			if(this.innerText=='暂停'){
+				clearInterval(timer);
+				this.innerText='开始';
+				return;
+			}
+			this.innerText='暂停';
+			init();
+		}
+		function init(){
+			let m=minute.value,
+				s=second.value,
+				total=eval(m+'*60+'+s);
+			if(total<=0){
+				alert('时间不能为空!');
+				return;
+			}
+			start(total);
+		}
+		function start(time){			
+			 timer=setInterval(function(){
+				time--;				
+				record(time)	
+			},1000);
+		}
+		function record(time) {			
+			let tmp_m=~~(time/60),
+				tmp_s=time%60;
+			minute.value=tmp_m<10?'0'+tmp_m:tmp_m;
+			second.value=tmp_s<10?'0'+tmp_s:tmp_s;	
+		}
+
+	</script>
+</body>
+</html>

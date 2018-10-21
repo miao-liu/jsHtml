@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>多级右键菜单</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;			
+			font: 20px/1.5 cursive;
+		}
+		i{
+			font-size: 20px;
+		}
+		li{
+			padding-left: 20px;	
+			width: 100%;		
+			text-align: center;
+			border: 1px solid #ccc;
+			background-color: #f1f1f1;
+			list-style-type: none;
+			cursor: pointer;
+		}
+		#rightMenu{			
+			position: fixed;
+			display:none;
+			top:100px;
+			width: 200px;
+			height: 100px;			
+		}		
+		 ul			
+		{
+			position: absolute;
+			width: 100%;
+			display: none;			
+		}		
+		li:hover{			
+			border-color: skyblue;
+			border-radius: 3px;			
+		}
+	</style>
+</head>
+<body>	
+	<h2>右击查看效果</h2>
+		<ul id="rightMenu">
+	        <li><strong>JavaScript 学习</strong></li>
+	        <li>
+	            第一课<i>&#9755</i>
+	            <ul>
+	                <li>网页特效原理分析</li>
+	                <li>响应用户操作</li>
+	                <li>提示框效果</li>
+	                <li>事件驱动</li>
+	                <li>元素属性操作</li>
+	            </ul>
+	        </li>
+	        <li>
+	            第二课<i>&#9755</i>
+	            <ul>
+	                <li>改变网页背景颜色</li>
+	                <li>函数传参</li>
+	                <li>高重用性函数的编写</li>
+	                <li>126邮箱全选效果</li>
+	                <li>循环及遍历操作</li>
+	            </ul>
+	        </li>
+	        <li>
+	            第三课<i>&#9755</i>
+	            <ul>
+	                <li>
+	                    JavaScript组成<i>&#9755</i>
+	                    <ul>
+	                        <li>ECMAScript</li>
+	                        <li>DOM</li>
+	                        <li>BOM</li>
+	                        <li>JavaScript兼容性来源</li>
+	                    </ul>
+	                </li>
+	                <li>JavaScript出现的位置、优缺点</li>
+	                <li>变量、类型、typeof、数据类型转换、变量作用域</li>
+	                <li>
+	                	闭包<i>&#9755</i>
+	                    <ul>
+	                        <li>什么是闭包</li>
+	                        <li>简单应用</li>
+	                        <li>闭包缺点</li>
+	                    </ul>
+	                </li>
+	                <li>运算符</li>
+	                <li>程序流程控制</li>
+	                <li>
+	                    定时器的使用<i>&#9755</i>
+	                    <ul>
+	                        <li>setInterval</li>
+	                        <li>setTimeout</li>
+	                    </ul>
+	                </li>
+	            </ul>
+	        </li>
+	    </ul>	
+	<script type="text/javascript">		
+		let rightMenu=document.getElementById('rightMenu');
+
+		//显示右键菜单
+		document.addEventListener('contextmenu',(e)=>{
+			showRightMenu(e);
+			e.preventDefault();//阻止默认事件
+		})
+
+		document.addEventListener('mouseover',(e)=>{			
+			let curTarget=e.target||e.srcElement;			
+			if(curTarget.tagName=='LI')
+				showChild(e,curTarget)
+		})		
+		
+		document.addEventListener('mouseout',(e)=>{		
+			if(e.target.tagName!='LI'){
+				hideOther(rightMenu.children);
+			}
+		})
+
+		document.addEventListener('click',()=>{rightMenu.style.display='none'})
+
+		function showRightMenu(e){
+			let x=e.clientX,
+				y=e.clientY;
+			rightMenu.style.top=y+'px';
+			rightMenu.style.left=x+'px';
+			rightMenu.style.display='block';		
+		}
+
+		function showChild(e,obj){
+			let sonMenu=obj.getElementsByTagName('ul')[0];
+			if(!sonMenu)return;
+			let x=obj.offsetWidth,
+				y=obj.offsetTop;
+			sonMenu.style.top=y+'px';
+			sonMenu.style.left=x+'px';	
+			//兄弟元素
+			let list=obj.parentElement.children;
+			hideOther(list)
+			sonMenu.style.display='block';
+		}
+		
+		function hideOther(obj){	
+			//清空其他元素子元素display样式
+			for(let i=0,len=obj.length;i<len;i++){
+				if(obj[i].getElementsByTagName('ul')[0]){
+					obj[i].getElementsByTagName('ul')[0].style.display='none';
+				}
+			}		
+		}		
+	</script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>动态生成表格</title>
+	<style type="text/css">		
+		input{
+		    width: 50px;
+		    border-radius: 5px;
+		}		
+		:invalid {
+		    color: red;
+		}
+		td{
+			width: 30px;
+			height: 30px;
+			text-align: center;
+			cursor: pointer;
+		}
+		button {
+		    height: 30px;
+		    border-radius: 5px;
+		    border: none;
+		    background-color: lightskyblue;
+		    color: white;
+		    cursor: pointer;
+		}
+		button:hover{
+			background-color: gray;
+		}
+		h4{
+			font-weight: bold;
+			height: 30px;			
+		}		
+		i{	
+			display: inline-block;
+			width: 20px;
+			height: 20px;
+		}
+	</style>
+</head>
+<body>
+	<p>
+		<label>行数:
+			<input type="number" min="0" max='100' id="row" />
+		</label>
+		<label>列数:
+			<input type="number" min="0" max="100" id="col" />
+		</label>		
+		<button id="btn">生成表格</button>
+	</p>
+	<h4 id="msg"></h4>	
+	<script type="text/javascript">
+		function CreateTable(){
+			this.oTable=null;
+			this.bgColor=0;
+		}
+
+		CreateTable.prototype={
+			init(row,col){
+				let oFrag=document.createDocumentFragment(),
+					oTemp=document.createElement('div'),
+					oBody=document.body,
+					aRow=[],
+					aCol=[];
+				for(let i=row;i--;){
+					aCol.length=0;
+					for(let j=col;j--;){
+						this.bgColor=this.getRanColor();
+						aCol.push(`<td style='background-color:${this.bgColor};'>${this.randomRange(1,15)}</td>`);
+					}					
+					aRow.push('<tr>'+aCol.join('')+'</tr>');
+				}
+				oTemp.innerHTML='';//清空	
+				oTemp.innerHTML='<table><tbody>'+aRow.join('')+'</tbody></table>';					
+				oFrag.appendChild(oTemp);
+
+				this.oTable&&oBody.removeChild(this.oTable)
+				oBody.appendChild(oFrag);
+				this.oTable=oBody.lastChild;
+			},
+			randomRange(min,max){
+				return ~~(Math.random()*(max-min+1)+min);
+			},
+			getRanColor(){
+				let str=this.randomRange(0,0xF0F0F0).toString(16);				
+				while(str.length<6)str='0'+str;
+				//三目运算 当前生成颜色和this.bgColo的十进制相同则+10000
+				return '#'+(this.bgColor.toString().replace('#','').toString(10)===str.toString(10)?str+100000:str)
+			}
+		}
+
+
+		let start=new Date().getTime(),
+			oTab=new CreateTable(),
+			oRow=document.getElementById('row'),
+			oCol=document.getElementById('col'),
+			oBtn=document.getElementById('btn'),
+			oMsg=document.getElementById('msg');
+
+		oBtn.onclick=function(){			
+			let reg=/^(\d{1,2}|100)$/;
+			if(!reg.test(oRow.value)){
+				alert('请输入【1-100】之间的整数!')
+				oRow.select();
+				return;
+			}else if(!reg.test(oCol.value)){
+				alert('请输入【1-100】之间的整数!')
+				oCol.select();
+				return;
+			}
+			oMsg.style.display='none';			
+			oTab.init(oRow.value,oCol.value);
+			console.log(new Date().getTime()-start);
+			oTab.oTable.addEventListener('click',function(e){
+				getInfo(e)
+			})
+		}		
+
+		function getInfo(e){
+			let curTarget=e.target||e.srcElement;	
+			if(!curTarget.tagName=='TD')return;
+			bgColor=curTarget.style.backgroundColor;			
+			oMsg.style.display='block';
+			oMsg.innerHTML='';
+			oMsg.innerHTML=`当前块的数字是:${curTarget.innerText},背景颜色是:<i style='background-color:${bgColor};'></i>${bgColor}`;			
+		}
+	</script>
+</body>
+</html>
