@@ -12,26 +12,27 @@
 			background-color: #ccc;			
 		}
 		header{	
-			position: absolute;		
+			position: fixed;		
 			top: 0;
 			left: 0;
 			width: 100%;
 			text-align: center;	
 			min-width: 515px;		
 			background-color:#131623;	
-		}
+			transition: left,top,1s;
+		 	}
 		p{	
 			margin: 0;		
 			font:12px/28px Arial;
 			color: #7a7a7a;
 			text-align: center;	
-			border-bottom: 1px solid #7a7a7a;		
+			border-bottom: 1px solid #7a7a7a;
 		}
 		a{			
 			text-decoration-line: none;	
 		}
 		p a{							
-			display: inline-block;			
+			display: inline-block;	
 			width:70px;
 			height: 20px; 
 			line-height: 20px;
@@ -50,7 +51,7 @@
 		span{
 			display: inline-block;
 			margin:10px 20px; 
-		}
+		}		
 	</style>
 </head>
 <body>
@@ -66,11 +67,35 @@
 			<span><a href="javascript:;">个性化服务</a></span>
 		</nav>
 	</header>
-	<script type="text/javascript">
-		/*
-		srcoll监听事件
-		超过p的可视宽度固定不动
-		*/
+	<script type="text/javascript">		
+		let config={
+			obj:document.getElementsByTagName('header')[0],
+			baseH:document.getElementsByTagName('p')[0].clientHeight,
+			scrollTop(){
+				return document.body.scrollTop||document.documentElement.scrollTop;
+			}
+		}			
+		document.onscroll=function(){
+			let tmp_h=config.scrollTop(),
+				topbar_h=config.baseH;	
+				//上滑
+			if(tmp_h>=topbar_h){
+				config.obj.style.top=-topbar_h+'px';
+
+				//添加鼠标划过事件
+				config.obj.addEventListener('mouseover',()=>{
+					config.obj.style.top=0;
+				})
+				config.obj.addEventListener('mouseout',()=>{
+					config.obj.style.top=`-${topbar_h}px`;
+				})
+				
+			}
+				//下滑
+			else {
+				config.obj.style.top=0;
+			}
+		}		
 	</script>
 </body>
 </html>

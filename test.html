@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>编辑窗口</title>
+	<style type="text/css">		
+		i{
+			display: inline-block;
+			margin: 5px;
+			width: 30px;
+			height: 30px;
+			background-color: skyblue;
+		}
+		/*左右*/
+		i:nth-child(1){
+			cursor: e-resize;
+		}
+		/* 上下 */
+		i:nth-child(2){
+			cursor: n-resize;
+		}
+		/* 东北，西南 */
+		i:nth-child(3){
+			cursor:nw-resize;
+		}
+		/* 西北，东南 */
+		i:nth-child(4){
+			cursor: sw-resize;
+		}	
+		div{
+			width: 50px;
+			height: 50px;
+			background-color: red;
+		}	
+	</style>
+</head>
+<body>
+	<i></i>
+	<i></i>
+	<i></i>
+	<i></i>
+	<div id="test">	</div>
+	<script type="text/javascript">
+		let div=document.getElementById('test');
+		div.addEventListener('mouseover',()=>{
+			console.log('over');
+		})
+		div.addEventListener('mousemove',(e)=>{
+			console.log(e.clientX)
+		})
+	</script>
+</body>
+</html>

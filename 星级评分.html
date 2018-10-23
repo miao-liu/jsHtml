@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>相机评分</title>
+	<style type="text/css">
+		*{
+			margin:0;
+			padding: 0;			
+		}
+		body{
+			color: #666;
+			font-size: 12px;
+			line-height: 18px;
+			font-family: cursive;
+		}		
+		li{		
+			float: left;
+			margin-top: 5px;
+			margin-left: 10px;
+			width: 20px;
+			height: 20px;
+			list-style-type: none;
+			background-image: url(./images/star.png);			
+			cursor: pointer;
+			transition: background-position .5s;
+		}
+		.bright{
+			background-position: 0 -28px;
+		}
+		#star{
+			position: relative;
+			margin: 10px auto;
+			width: 600px;		
+		}		
+		 #msg{	
+			position: absolute;
+			top: 50px;
+			width: 100px;		
+			text-align: center;	
+			opacity: 0;
+		} 
+		#score{
+			color: red;
+		}		
+	</style>
+</head>
+<body>
+	<div id="star">
+		<span>点星星打分</span>
+		<ul>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+			<li></li>
+		</ul>		
+		<div id='msg'>		
+			<i id="score"></i><br>
+			<i id="comment"></i>
+		</div>
+	</div>
+	<script type="text/javascript">
+		let star=document.getElementById('star'),
+			list=document.querySelectorAll('li'),
+			op=document.querySelector('p'),
+			info=document.getElementById('msg'),
+			score=document.getElementById('score'),
+			comment=document.getElementById('comment'),
+			len=list.length-1,
+			index=0,
+			flag=false;		
+			aMsg= [
+				"很不满意|差得太离谱，与卖家描述的严重不符，非常不满",
+				"不满意|部分有破损，与卖家描述的不符，不满意",
+				"一般|质量一般，没有卖家描述的那么好",
+				"满意|质量不错，与卖家描述的基本一致，还是挺满意的",
+				"非常满意|质量非常好，与卖家描述的完全一致，非常满意"
+				];
+		query(len,function(target){
+			target.setAttribute('index',index++);
+			target.onmouseover=function(){
+				let index=this.getAttribute('index');
+				bright(index)
+				showinfo(index)
+			}			
+			target.onmouseout=function(){
+				if(!flag)return;
+				hide(0);
+				info.style.opacity=0;
+			}
+		})
+
+		star.addEventListener('click',function(e){
+			if(e.target.tagName!='LI')return;
+			let cur=e.target;			
+			showinfo(cur.getAttribute('index'));
+			flag=false;
+		})
+		
+		function showinfo(index){
+			let grade=Number(index)+1,
+				note=aMsg[index].match(/(.+)\|(.+)/);
+			score.innerHTML=grade+'分   '+note[1];
+			comment.innerHTML=note[2];
+			info.style.left=index*24+12+'px';
+			info.style.opacity=1;
+		}
+		function bright(index){			
+			hide(index)
+			query(index,function(target){
+				target.className='bright';
+			})
+		}
+		function hide(index){			
+			while(index<=len){
+				list[index]&&(list[index].className='');
+				index++;
+			}
+		}
+		function query(len,cb){			
+			for(let i=0;i<=len;i++){
+				cb&&cb(list[i])
+			}			
+		}
+	</script>
+</body>
+</html>

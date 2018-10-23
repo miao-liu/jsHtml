@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>拖拽</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		body{
+			position: relative;
+			width: 100%;
+			height: 100%;
+		}
+		header{
+			width: 100%;
+			height: 30px;			
+		}
+		a{					
+			float: right;	
+			margin-top: 10px;			
+			color: white;
+			font-style: bold;
+			text-decoration-line: none;
+		}
+		#box{
+			padding: 0;
+			position: absolute;			
+			width: 300px;					
+			color: white;
+			background-color: skyblue;
+			user-select: none;
+			cursor: move;				
+		}
+		p{
+			margin: 10px;
+			padding-left: 5px;
+			padding-bottom: 5px;
+			border-bottom: 1px solid white;
+		}
+		i{
+			color: orangered;
+		}
+	</style>
+</head>
+<body>
+	<div id="box" draggable='true'>
+		<header>
+			<a href="javacscript:;" id="btn">点击回放拖动轨迹&nbsp;&nbsp;&nbsp;</a>
+		</header>		
+		<main>
+		<p>
+			Drag:<i id="drag"></i>
+		</p>
+		<p>
+			offsetTop:<i id="top"></i>
+		</p>
+		<p>
+			offsetLeft:<i id="left"></i>
+		</p>
+		</main>		
+	</div>
+	<script type="text/javascript">
+		let box=document.getElementById('box'),
+			boxCenter=[box.offsetWidth/2,box.offsetHeight/2],
+			btn=document.getElementById('btn'),
+			map=[],//记录坐标
+			drag=document.getElementById('drag'),
+			box_top=document.getElementById('top'),
+			box_left=document.getElementById('left');	
+
+		box.addEventListener('dragstart',(e)=>{
+			drag.innerText+='true';
+			e.dataTransfer.effectAllowed='move';
+		})
+
+		document.addEventListener('dragover',(e)=>{		
+			e.preventDefault();			
+			 box_left.innerText=e.clientX;
+			 box_top.innerText=e.clientY;
+			map.push({x:e.clientX-boxCenter[0],y:e.clientY-boxCenter[1]});
+		})
+		
+		document.addEventListener('drop',(e)=>{
+			e.preventDefault();			
+			drag.innerText='false';
+			let x=e.clientX-boxCenter[0],
+				y=e.clientY-boxCenter[1];
+				box.style.top=y+'px';
+				box.style.left=x+'px';
+		})
+
+		btn.onclick=function(){
+			if(!map.length)return;
+			let timer=setInterval(()=>{
+				if(map.length==0){
+					clearInterval(timer);
+					return;
+				}
+				box.style.top=map[0].y+'px';
+				box.style.left=map[0].x+'px';
+				map.shift();
+			},30)
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>编辑窗口</title>
+	<style type="text/css">		
+		html,body{
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+		li{
+			padding-top: 10px;
+			padding-bottom: 10px;
+			border-bottom:1px solid white;
+			list-style-type: gurmukhi;
+		}
+		ul{
+			margin-top: -20px;
+		}
+		i{
+			float: right;
+			margin-top: 5px;
+			margin-right: 5px;
+			width: 20px;
+			height: 20px;
+			background-color:white;			
+			border-radius: 2px;
+			cursor: pointer;
+			box-shadow: 0px -1px 0px grey inset;
+		}
+		.box{
+			position: relative;			
+			top: 0;
+			left: 50px;			
+			overflow:hidden;
+			width: 250px;	
+			height: 300px;
+			min-width: 300px;	
+			color: white;			
+			background-color: skyblue;
+			border-radius: 3px;
+			user-select: none;
+			transition: all,.5s;
+		}		
+		.title{
+			width: 100%;
+			height: 30px;
+			font-family: cursive;
+			font-size: 15px;
+			line-height: 30px;
+			text-align: center;
+			border-bottom: 1px solid white;
+		}
+		.restore{
+			background-image: url(./images/tool.png);
+			background-repeat: no-repeat;
+			background-position: -150px 0;
+		}
+		.restore:hover{			
+			background-position: -150px -29px;
+		}
+		.open{			
+			margin-top: 50px;
+			margin-left: 150px;
+			float: left;
+			background-image: url(./images/tool.png);
+			background-repeat: no-repeat;
+			background-position: 0 0;
+		}
+		.open:hover{
+			background-position: 0 -29px;
+		}
+		.min{
+			background-image: url(./images/tool.png);
+			background-repeat: no-repeat;
+			background-position: -30px 0;
+		}
+		.min:hover{			
+			background-position: -30px -29px;
+		}
+		.max{
+			background-image: url(./images/tool.png);
+			background-repeat: no-repeat;
+			background-position: -60px 0;
+		}
+		.max:hover{			
+			background-position: -60px -29px;
+		}	
+		.close{
+			background-image: url(./images/tool.png);
+			background-repeat: no-repeat;
+			background-position: -90px 0;
+		}
+		.close:hover{
+			background-position: -90px -29px;
+		}
+		.resize{
+			position: absolute;
+			bottom: -5px;
+			right: -5px;
+			background-image: url(./images/resize.png);
+			background-repeat: no-repeat;
+				}
+
+		b{
+			display: block;
+			position: absolute;
+		}
+		/* 左右 */
+		.resizeL,.resizeR{
+			top: 0;
+			width: 15px;
+			height: 100%;
+			cursor: e-resize;
+		}
+		.resizeL{			
+			left: 0px;
+		}
+		.resizeR{
+			right: 0;			
+		}
+		/* 上下 */
+		.resizeT,.resizeB{			
+			width: 100%;
+			height: 5PX;
+			cursor: n-resize;
+		}
+		.resizeT{			
+			top: 0;
+		}
+		.resizeB{
+			bottom: 0;			
+		}
+		
+		.resizeLT,.resizeRB,
+		.resizeRT,.resizeLB{
+			width: 20px;
+			height: 20px;			
+		}
+		/* 左上，右下 */
+		.resizeLT,.resizeRB{
+			cursor: nw-resize;
+		}
+		.resizeLT{
+			top: 0;
+			left: 0;			
+		}
+		.resizeRB{
+			right: 0;
+			bottom: 0;
+		}
+		/* 右上，左下 */
+		.resizeRT,.resizeLB{
+			cursor: sw-resize;
+		}
+		.resizeRT{
+			top: 0;
+			right: 0;
+		}		
+		.resizeLB{
+			left: 0;
+			bottom: 0;
+		}
+	</style>
+</head>
+<body>
+	<main class="box" draggable='true'>	
+		<h3 class="title">
+			这是一个可以拖动的窗口
+			<i class="close"></i>
+			<i class="max"></i>
+			<i class="min"></i>
+		</h3>
+		<div class="content">
+			<ul>
+				<li>可拖动</li>
+				<li>可通过八个方向改变大小</li>
+				<li>可最大化，最小化，还原，关闭</li>
+				<li>限制窗口最小宽度</li>
+			</ul>
+		</div>
+		<i class="resize"></i>
+
+		<b class="resizeL"></b>
+		<b class="resizeT"></b>
+		<b class="resizeR"></b>
+		<b class="resizeB"></b>
+		<b class="resizeLT"></b>
+		<b class="resizeRT"></b>
+		<b class="resizeLB"></b>
+		<b class="resizeRB"></b>	
+	</main>
+	<i class="open" hidden="true" title="还原"></i>
+	<script type="text/javascript">		
+		let box=document. 					querySelector('.box'),//容器
+			min=document.querySelector('.min'),//缩小
+			max=document.querySelector('.max'),//最大
+			close=document.querySelector('.close'),//关闭
+			restore=document.querySelector('.open'),//还原按钮		
+
+			resizeT=document.querySelector('.resizeT'),
+			resizeR=document.querySelector('.resizeR'),
+			resizeL=document.querySelector('.resizeL'),
+			resizeB=document.querySelector('.resizeB'),			
+			resizeLT=document.querySelector('.resizeLT'),
+			resizeRT=document.querySelector('.resizeRT'),
+			resizeLB=document.querySelector('.resizeLB'),
+			resizeRB=document.querySelector('.resizeRB');
+
+		let win={			
+			hide(){				
+				box.setAttribute('hidden','true');
+				restore.removeAttribute('hidden')
+			},
+			zoom(obj){				
+				let class_list=obj.classList;
+				//改变大小
+				box.style.height='100%';
+				box.style.width='100%';
+				//改变定位
+				box.style.top=0;
+				box.style.left=0;
+				//改变背景	
+				class_list.remove('max');
+				class_list.add('restore');
+			},
+			reset(obj){
+				if(obj){				
+					let class_list=obj.classList;
+					//改变背景	
+				class_list.remove('restore');
+				class_list.add('max');
+				//初始状态
+				box.style.width='300px';
+				box.style.height='250px';
+				return;
+				}
+				restore.setAttribute('hidden','true');
+				 box.removeAttribute('hidden');
+			},
+			move(x,y){
+				box.style.top=y+'px';
+				box.style.left=x+'px';
+			},
+			setWidth(x){				
+				console.log(x)
+				// if(box.offsetWidth<=300)return;
+				box.style.width=box.offsetWidth-x+'px';
+			},
+			setHeight(y){
+				//box.style.height=box.offsetHeight-y+'px';
+			},
+			setLeft(l){	
+				if(box.offsetWidth<=300)return;
+				box.style.left=l+'px';
+			},
+			setTop(t){
+
+			}/*,
+			//目标元素 建高 建宽 锁左边距 锁右边距
+			resize(target,setWidth,setHeight,nolockLeft,nolockTop){
+				console.log(setWidth)
+				let _this=this,
+					flag=false;
+				target.addEventListener('mousedown',function(e){
+					box.removeAttribute('draggable');
+					flag=true;
+					let startTop=box.offsetHeight,
+						startLeft=box.offsetLeft;
+						document.addEventListener('mousemove',function(e){
+							if(!flag)return;
+							//左拖拽	
+							setWidth&&_this.setWidth(e.clientX-startLeft)
+							nolockLeft&&_this.setLeft(e.clientX-15)
+							//右拖拽
+							!setWidth&&_this.setWidth(-(e.clientX-box.offsetWidth))
+						})
+						document.addEventListener('mouseup',function(){
+							flag=false;
+							box.setAttribute('draggable','true');
+						})
+				})
+			}*/
+		}		
+
+		//关闭
+		min.onclick=win.hide;
+		close.onclick=win.hide;
+
+		//还原
+		restore.onclick=function(){
+			win.reset(null);
+		};
+
+		//缩放
+		max.onclick=function(){
+			//放大
+			if(this.classList.contains('max'))
+				win.zoom(this)
+			else//缩小
+				win.reset(this);
+		}
+
+/*		win.resize(resizeL,true,false,true,false,false);
+
+		win.resize(resizeR,false,false,false,false,false);
+*/		//移动/拖拽
+		box.addEventListener('dragstart',function(e){
+			e.dataTransfer.effectAllowed='move';
+		})
+
+		document.ondragover=function(){return false}
+
+		document.addEventListener('drop',function(e){
+			e.preventDefault();
+			let x=e.clientX-box.offsetWidth/2,
+				y=e.clientY-box.offsetHeight/2;
+			win.move(x,y)
+		})
+	</script>
+</body>
+</html>

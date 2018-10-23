@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>触屏解锁</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding:0;
+		}
+		#iphone{
+			position: relative;
+			margin: 50px auto;
+			width: 213px;
+			height: 320px;
+			border: 1px solid gray;
+			border-radius: 3px;
+			background-image: url(./images/phone.jpg);
+			background-size: 100% 100%;
+			background-repeat: no-repeat;
+		}
+		#lock{
+			position: absolute;
+			left: 0;
+			bottom: 12px;
+			width: 25%;
+			height: 40px;			
+			background-image: url(./images/btn.jpg);
+			background-repeat: no-repeat;
+			background-size: 100% 100%;
+			opacity: 1;
+			cursor: pointer;			
+			transition: left,opacity,.3s;
+		}
+	</style>
+</head>
+<body>
+	<div id="iphone"> 
+		<div id="lock">			
+		</div>
+	</div>
+	<script type="text/javascript">
+		let iphone=document.getElementById('iphone'),
+			lock=document.getElementById('lock'),
+			lockCenter=lock.offsetWidth/2,
+			phoneL=iphone.offsetLeft,//手机左边距
+			scrWidth=iphone.clientWidth,//手机宽度
+			flag=false;
+			lock.addEventListener('mousedown',()=>{
+				flag=true;
+				lock.addEventListener('mousemove',(e)=>{
+					if(flag)
+						move(e)
+				})
+			})			
+			lock.addEventListener('mouseup',(e)=>{
+				flag=false;		
+				let tmp_l=lock.offsetLeft;
+				if(tmp_l>=scrWidth)
+					open();
+				else
+					reset();
+			})
+
+		function move(e){
+			let lockL=e.clientX-phoneL-lockCenter;			
+			lockL<=0?lockL=0:lockL;
+			if(lockL>=scrWidth-lockCenter*2)open();
+			lock.style.left=lockL+'px';
+			//lock.style.transform="translateX("+lockL+"px);";//不动？
+		}
+
+		function open(){	
+			iphone.style.backgroundImage='url(./images/desktop.jpg)';
+			lock.style.opacity=0;
+		}
+
+		function reset(){
+			lock.style.left=0;
+		}
+	</script>
+</body>
+</html>
