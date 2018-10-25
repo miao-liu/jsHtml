@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>烟花</title>
+	<style type="text/css">
+		html,body{
+			position: relative;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}		
+		header{
+			position: absolute;
+			top: 0;
+			width: 100%;
+			z-index: 10;
+			background-color: white;
+			text-align: center;
+		}
+		button{
+			margin: 5px;
+		    width: 50px;
+		    color: deepskyblue;		
+		    border: none;
+		    background-color: white;
+		    border-radius: 5px;
+		    cursor: pointer;
+		}
+		canvas{
+			position: absolute;
+			top: 0;
+			left: 0;			
+			border-radius: 5px;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<button id="hand">手动</button>
+		<button id="auto">自动</button>
+		<button id="stop">停止</button>
+	</header>
+	<canvas></canvas>
+	<script type="text/javascript">
+		/*初始化画布	
+		  手动放烟花
+		  		生成烟花
+		  自动放烟花
+		  		随机生成烟花
+		  	烟花
+		  		初始状态render
+		  		移动 update		  		
+		  		由中心向四周扩散 open
+		*/
+		let hand=document.getElementById('hand'),
+			auto=document.getElementById('auto'),
+			stop=document.getElementById('stop'),
+			flag=false,
+			timer=null,
+			canvas=document.querySelector('canvas'),
+			ctx=canvas.getContext('2d'),
+			api={			
+			randomRange(min,max){
+				return ~~(Math.random()*(max-min)+min)
+			},
+			getRandomColor(){
+				let str=this.randomRange(0,0xffffff).toString(16);
+				while(str.length<6)str='0'+str;
+				return '#'+str;
+			}
+		};				
+		canvas.width=document.body.clientWidth;
+		canvas.height=document.body.clientHeight;
+		ctx.globalCompositeOperation="lighter";
+		ctx.fillStyle='black';
+		let w=canvas.width,
+			h=canvas.height;
+
+		ctx.fillRect(0,0,w,h)
+
+		function Fireworks(x,y=480){
+			this.x=x;
+			this.y=y;			
+			this.vy=1;
+			this.balls=null;			
+		}
+		Fireworks.prototype={
+			render:function(x,y,r){
+				ctx.beginPath();
+				ctx.fillStyle=api.getRandomColor();
+				if(arguments.length){
+					ctx.arc(x,y,r,0,2*Math.PI);
+				}else
+				ctx.arc(this.x,this.y,5,0,2*Math.PI);
+				ctx.closePath();
+				ctx.fill();
+			},
+			update_1(y){//升空
+				this.vy=this.vy*api.randomRange(2,5);
+				this.y-=this.vy;
+				if(this.y<y)
+					this.y=y;
+				this.render();
+			},
+			clear(){
+				ctx.clearRect(0,0,w,h);
+				ctx.fillStyle='black';
+				ctx.fillRect(0,0,w,h)
+			},
+			update_2(){//爆开
+				let len=this.balls.length,
+					_this=this;
+				let timer=setInterval(function(){
+					_this.clear();
+						if(!_this.balls.length){
+							clearInterval(timer);
+							return;
+						}
+					for(let i=0;i<len;i++){
+					let target=_this.balls[i];
+					if(!target)continue;
+					target.x+=target.vx;
+					target.y+=target.vy;
+					target.r-=0.02;	
+					if(target.r<=1){
+						_this.balls.splice(i,1);
+						return;
+					}else
+					_this.render(target.x,target.y,target.r)
+					}
+				},30)
+			},
+			open(x,y){
+				this.balls=new Array(api.randomRange(100,150));
+				let len=this.balls.length;
+				for(let i=0;i<len;i++){
+					this.balls[i]={};
+					this.balls[i].x=x+api.randomRange(-20,20);
+					this.balls[i].y=y+api.randomRange(-20,20);
+					this.balls[i].r=api.randomRange(2,5);
+					this.balls[i].vx=api.randomRange(-30,30);
+					this.balls[i].vy=api.randomRange(-30,30);	
+					this.render(this.balls[i].x,this.balls[i].y,this.balls[i].r)
+				}
+			}
+		}
+
+		function create(x,y){
+			let firework=new Fireworks(x,y);
+			firework.render();
+			//升空
+			while(firework.y>y){
+				firework.update_1(y);
+			}			
+			if(firework.y==y){
+				firework.open(x,y);
+				firework.update_2()		
+			}
+		}
+
+		hand.addEventListener('click',function(){
+			flag=true;
+		})
+		
+		auto.addEventListener('click',function(){			
+			flag=false;
+			timer=setInterval(function(){
+				let x=~~(api.randomRange(0,		w)),
+					y=~~(api.randomRange(50,h));
+					console.log(x,y)
+				create(x,y);
+			},2000)
+		})
+		stop.addEventListener('click',function(){
+			clearInterval(timer);
+		})
+		canvas.addEventListener('click',function(e){
+			console.log(2)
+				if(flag)
+				create(e.clientX,e.clientY);
+		})
+	</script>
+</body>
+</html>
