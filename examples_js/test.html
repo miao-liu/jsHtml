@@ -41,13 +41,25 @@
 	<i></i>
 	<div id="test">	</div>
 	<script type="text/javascript">
-		let div=document.getElementById('test');
-		div.addEventListener('mouseover',()=>{
-			console.log('over');
-		})
-		div.addEventListener('mousemove',(e)=>{
-			console.log(e.clientX)
-		})
+		class Person{
+			constructor(name,age){
+				this.name=name;
+				this.age=age;
+			}
+			say(){
+				console.log('hi,',this.name);
+			}
+			show(){
+				console.log('hello!')
+			}
+		}
+
+		let person1=new Person('monica',18)
+		//person1.say()
+		let arr=[1,2,3,4];
+		arr.splice(1,1)
+		console.log(arr)//1,3,4
+
 	</script>
 </body>
 </html>

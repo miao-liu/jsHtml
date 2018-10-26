@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>文字界面</title>
+	<style type="text/css">
+		canvas{
+			display: block;
+			margin: 40px auto;
+			background-color: black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id='canvas' width="700" height="200"></canvas>	
+	<script type="text/javascript">
+		/* 获取模板数组
+				fetch 
+			获取当前时间
+				getTime
+		*	绘制模板  1 绘制 0 跳过
+				draw
+			绘制时间
+				drawTime
+			随机生成颜色
+				getColor
+		*/
+		const ctx=canvas.getContext('2d');
+		let timer=null;	
+		let reg1=/(\d)(\d)\:(\d)(\d)\:(\d)(\d)/;
+		
+		fetch('http://localhost:3000/data/clock_data.json')
+			  .then(res=>{
+			  	res.json()
+			  		.then(data=>{
+			  			getTime(data)			  								
+					})
+			  })			
+
+
+		function drawTime(index,x,y,r){		
+			ctx.beginPath();
+			ctx.fillStyle=getColor();
+			ctx.arc(x*(r+5)+(index*80),y*(r+5)+30,r,0,2*Math.PI);
+			ctx.closePath();
+			ctx.fill();
+		}	
+
+		function draw(arr,data){					
+			for(let i=0;i<arr.length;i++){	
+					let tmp_x=arr[i];					
+				for(let j=0;j<data[tmp_x].length;j++){					
+						for(let k=0;k<data[tmp_x][j].length;k++){	
+							if(!data[tmp_x][j][k])
+								continue;
+							drawTime(i,k,j,3)
+						}					
+					}
+				}
+		}
+
+		function getTime(data){
+			clearInterval(timer)
+	  			timer=setInterval(function(){
+	  				ctx.clearRect(0,0,canvas.width,canvas.height)
+					let tmp_arr=[],
+						date=new Date().toString(),
+						result=reg1.exec(date);							
+				tmp_arr.push(result[1],result[2],10,result[3],result[4],10,result[5],result[6]);
+				draw(tmp_arr,data.templates);
+				},1000)
+		}	
+
+		function getColor(){
+			let str=(Math.random()*0xffffff).toString(16).slice(0,6);
+			return '#'+str;
+		}
+	</script>
+</body>
+</html>

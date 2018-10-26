@@ -166,10 +166,10 @@
 		
 		auto.addEventListener('click',function(){			
 			flag=false;
+			clearInterval(timer);
 			timer=setInterval(function(){
 				let x=~~(api.randomRange(0,		w)),
-					y=~~(api.randomRange(50,h));
-					console.log(x,y)
+					y=~~(api.randomRange(50,h));					
 				create(x,y);
 			},2000)
 		})

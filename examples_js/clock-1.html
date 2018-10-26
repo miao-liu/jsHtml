@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>文字界面</title>
+	<style type="text/css">
+		canvas{
+			display: block;
+			margin: 40px auto;
+		}
+	</style>
+</head>
+<body>
+	<canvas id='canvas' width="500" height="200"></canvas>	
+	<script type="text/javascript">
+		/* ctx绘制文字
+		*		传入时间 x走坐标
+		*  或取当前时间
+		*		整理数据为数组
+		*          遍历数组调用绘制方法
+		*/
+		let ctx=canvas.getContext('2d'),
+			timer=null;			
+		let drawTime={
+			randomColor(){				
+				let str=(Math.random()*0xffffff).toString(16).slice(0,6);
+				return '#'+str;
+			},
+			//一次性绘制好
+			draw(config){				
+				ctx.shadowBlur=5.6;
+				ctx.shadowColor=this.randomColor();
+				ctx.shadowOffsetX=10;
+				ctx.shadowOffsetY=-6;
+				ctx.fillStyle=this.randomColor();
+				ctx.font='italic 50px cursiv';
+				ctx.textBaseline='top';
+				config.time&&ctx.fillText(config.time,160,0);
+				config.index&&ctx.fillText(config.num,config.index,100);
+			},			
+			getTime(){
+				let reg1=/(\d{2})(\:)(\d{2})(\:)(\d{2})/;
+					date=new Date().toString(),
+					result=reg1.exec(date);
+					time=result[0],
+					num=result.splice(1);
+					return {
+						time:time,
+						num:num
+					}
+			}
+		}
+		
+		clearInterval(timer);
+		timer=setInterval(function(){
+			ctx.clearRect(0,0,canvas.width,canvas.height)
+		let args=drawTime.getTime(),
+			arr=args.num;
+		drawTime.draw({time:args.time})
+		for(let i=0,j=0,len=arr.length;i<len;i++){	
+			j++;
+			drawTime.draw({index:j*80,num:arr[i]})
+			}
+		},1000)		
+	</script>
+</body>
+</html>
