@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>音频绘制</title>
+	<style type="text/css">
+		body{
+			overflow: hidden;
+		}
+		canvas{			
+			background: linear-gradient(20deg,white,lightblue);
+		}
+	</style>
+</head>
+<body>		
+	<audio src="http://localhost:3000/audios/one.mp3" controls crossOrigin='anonymous'></audio>	
+	<canvas id="canvas"></canvas>
+	<script type="text/javascript">
+		/*
+		* 获取页面中audio元素
+		* 创建音频上下文AudioContext
+		* 创建媒体源createMediaElementSource
+		* 创建效果createAnalyser
+		* 连接各个功能模块connect
+		* 数据可视化--柱状图
+				获取缓冲区音频数据frequencyBinCount且getByteFrequencyData实时进行数据的转换
+				根据获取数据绘制图形
+		* #数据可视化处理(fftsize-快速傅里叶变换)
+		*/
+		canvas.width=window.innerWidth;
+		canvas.height=window.innerHeight;
+
+		let canvasCtx=canvas.getContext('2d'),
+			canvasW=canvas.width,
+			canvasH=canvas.height,
+			color=canvasCtx.createLinearGradient(0,canvasH/2+50,0,50)					
+
+			color.addColorStop(0.2,'#f00');
+			color.addColorStop(0.5,'#f0f');
+			color.addColorStop(1,'#0ff');
+
+		 let audio=document.querySelector('audio'),
+
+		   audioCtx=new AudioContext(),
+		   audioSrc=audioCtx.createMediaElementSource(audio),
+		   analyser=audioCtx.createAnalyser();
+
+			audioSrc.connect(analyser);
+			analyser.connect(audioCtx.destination);
+
+			//缓冲区处理 二进制转换
+			let vocieData=new Uint8Array(analyser.frequencyBinCount),
+				count=80;//柱状图个数
+
+			function draw(){
+				analyser.getByteFrequencyData(vocieData);
+				let rate=Math.round(vocieData.length/count);
+				for(let i=0;i<count;i++){
+					let tmp_data=vocieData[i*rate];
+					canvasCtx.fillStyle=color;
+					canvasCtx.fillRect(100+i*20,canvasH/2+50,15,-tmp_data);
+				}
+
+				
+			}
+			setInterval(draw,30);
+			audio.play()
+	</script>
+</body>
+</html>

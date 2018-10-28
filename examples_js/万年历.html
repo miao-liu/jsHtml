@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>万年历</title>
+	<style type="text/css">
+		html,body{
+			margin: 0;
+			padding: 0;
+			width: 100%;
+		}
+		h2,h3{
+			text-align: center;
+		}
+		p{
+			display: flex;
+			width: 100%;
+			justify-content: space-between;
+		}
+		ul{			
+			display: grid;
+			padding-left: 0px;
+			width: 100%;
+			grid-template-columns: repeat(7,1fr);
+			grid-template-rows: repeat(7,1fr);
+		}
+		li{
+			text-align: center;		
+			list-style-type: none;
+			border-bottom: 1px solid #ccc;
+			transition-property: opacity;
+			transition-duration: .5;
+		}
+		.content{
+			width: 80%;	
+			margin-left: 20px;
+			border: 2px solid lightblue;
+		}			
+		select,button{					
+			cursor: pointer;
+		}	
+		button{			
+			background-color: white;
+		}	
+		.hide{
+			opacity: .4;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h2>万年历</h2>
+	</header>	
+	<main>		
+		<div class="content">
+			<h3>DIY</h3>
+			<p>
+				<select id="year">
+					<option>
+						请选择年份
+					</option>
+				</select>	
+				<select id="month">
+					<option>
+						请选择月份
+					</option>
+					<option value="1">1</option>
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="5">5</option>
+					<option value="6">6</option>
+					<option value="7">7</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="11">11</option>
+					<option value="12">12</option>
+				</select>
+				<button id="search">查询</button>
+			</p>
+			<section>			
+				<ul class="content">
+					<li class="title">日</li>
+					<li class="title">一</li>
+					<li class="title">二</li>
+					<li class="title">三</li>
+					<li class="title">四</li>
+					<li class="title">五</li>
+					<li class="title">六</li>					
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class='item'></li>
+					<li class="item"></li>
+					<li class="item"></li>
+					<li class="item"></li>
+					<li class="item"></li>
+					<li class="item"></li>
+					<li class="item"></li>
+					<li class="item"></li>
+				</ul>
+			</section>
+		</div>
+	</main>
+<script type="text/javascript">
+	/*
+		*	Date原型链添加getLastday方法
+		*		获取每个月的总天数
+		*	规定截止年份
+		*		遍历循环填充年份选项	init
+		*	获取选中值 年 月
+		*   	查找该年该月天数填充页面 find(年，月)
+		*			新建日期 获取该月天数days 周几 tmp_day 如果tmp_day=0时改为7
+		*			遍历item元素 
+		*				索引i小于temp_day时
+		*					填充前面隐形日期
+		*					如果m=0,first_day=31,获取该日期上个月的天数first_day逆序填充
+		*					元素添加hide类
+		*				索引i大于tmp_day时
+		*					移除hide类
+		*					填充文本
+		*				其它
+		*					填充后面隐形日期
+		*					元素添加hide类
+		*	#日期方法中,0表示1月,11表示12月
+	*/
+	Date.prototype.getlastDay=function(){
+		let tmp_year=this.getFullYear(),
+			tmp_February_days=28;
+		if(tmp_year%400==0||tmp_year%4==0)
+				tmp_February_days=29;
+		switch(this.getMonth()){
+			case 0:
+			case 2:
+			case 4:
+			case 6:
+			case 7:
+			case 9:
+			case 11:
+				return 31;				
+			case 1:
+			return tmp_February_days;
+			default:
+				return 30;
+		}
+	}
+
+	let year=document.getElementById('year'),
+		month=document.getElementById('month'),
+		day_list=document.querySelectorAll('.item'),
+		len=day_list.length;
+		search=document.getElementById('search'),
+		end_year=1900;
+
+	let calendar={					
+		inner_html:'<option>请选择年份</option>',
+		init(){		
+			let str=this.inner_html;				
+			for(let i=2055;i>=end_year;i--){
+			str+=`<option value=${i}>${i}</option>`;
+			}			
+			year.innerHTML=str;
+		},		
+		find(y,m){
+			let tmp_date=new Date(y,m),
+				tmp_day=tmp_date.getDay()==0?7:tmp_date.getDay(),
+				days=tmp_date.getlastDay(),
+				last_day=1;
+			for(let i=0,j=1;i<len;i++){
+				let target=day_list[i];
+				if(i<tmp_day){
+					let count=tmp_day-1,
+						tmp_m=m,
+						first_day=0;
+						if(tmp_m==0)
+							first_day=31;
+						else
+						first_day=new Date(y,tmp_m-1).getlastDay();
+
+					while(count>=0){
+						day_list[count].innerText=first_day--;
+						!day_list[count].classList.contains('hide')&&day_list[count].classList.add('hide');
+						count--;
+					}					
+					i=tmp_day-1;
+				}else if(i<days+tmp_day){
+					target.classList.contains('hide')&&target.classList.remove('hide');
+					target.innerText=j;
+					j++;
+				}else{
+					target.innerText=last_day++;
+					!target.classList.contains('hide')&&target.classList.add('hide');
+				}
+			}			
+		}
+	}
+
+
+	calendar.init();
+	calendar.find(new Date().getFullYear(),new Date().getMonth());
+
+	search.onclick=function(){
+		let y=year.value||'2018',
+			m=month.value-1;			   
+			if(!m){
+				alert('请选择月份!!');
+				return;
+			}
+		calendar.find(y,m);					
+	}		
+</script>
+</body>
+</html>
