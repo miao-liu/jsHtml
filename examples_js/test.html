@@ -42,37 +42,40 @@
 	<div id="test">	</div>
 	<button id="btn">click</button>
 	<script type="text/javascript">
+		let lover='even';
 		//class
-/*		class Person{
+		class Person{			
 			constructor(name,age){
 				this.name=name;
 				this.age=age;
-			}
+			}			
 			say(){
+				console.log(lover)
 				console.log('hi,',this.name);
 			}
 			show(){
 				console.log('hello!')
 			}
 		}
-
+		Person.lover='evel';
 		let person1=new Person('monica',18)
-		//person1.say()*/
+		person1.say()
 	
 
 		//promise	
-		/*let btn=document.getElementById('btn');
-		btn.addEventListener('click',function(){
-			Promise.reject().catch(()=>{
-				console.log(1)
-			});
-			console.log(2)
-		})
-		btn.addEventListener('click',function(){
-			Promise.resolve().then(()=>{
-				console.log(3)
+		/*let 	
+			btn=document.getElementById('btn');
+			btn.addEventListener('click',function(){
+				Promise.reject().catch(()=>{
+					console.log(1)
+				});
+				console.log(2)
 			})
-			console.log(4)			
+			btn.addEventListener('click',function(){
+				Promise.resolve().then(()=>{
+					console.log(3)
+				})
+				console.log(4)			
 		})*/
 
 		//变量提升
@@ -81,20 +84,22 @@
 		console.log(a);*/
 
 		//method
-		function quickSort(arr){
-			if(arr.length<=1)
-				return arr;
-			let baseNum=arr.pop(),
-				left=[],
-				right=[];
-			arr.forEach(item=>{
-				item<baseNum?left.push(item):right.push(item)
-			})
-			return quickSort(left).concat(baseNum,quickSort(right));
-		}
+		/*
+			function quickSort(arr){
+				if(arr.length<=1)
+					return arr;
+				let baseNum=arr.pop(),
+					left=[],
+					right=[];
+				arr.forEach(item=>{
+					item<baseNum?left.push(item):right.push(item)
+				})
+				return quickSort(left).concat(baseNum,quickSort(right));
+			}
 
-		let arr=quickSort([3,4,2,1]);
-		console.log(arr)
+			let arr=quickSort([3,4,2,1]);
+			console.log(arr)
+		*/
 
 		//switch
 		function testSwitch(num){
@@ -106,11 +111,30 @@
 				default:
 					return 3;
 			}
-		}	
+		}
 
-		//Date
-		let date=new Date(2018,4);
-		console.log(date.toString())
+		//Array.prototype.keys/entries
+		/*
+			let arr1=[1,2,3],
+				iterator1=arr1.keys(),
+				iterator2=arr1.entries();
+
+			for(let key of iterator1)
+				console.log(key)//0,1,2[索引]
+			
+			//注意done值
+			console.log(iterator2.next())
+			console.log(iterator2.next())
+			console.log(iterator2.next())
+			console.log(iterator2.next())
+		*/
+
+		//遍历Array
+		/*let arr=['a','b','c'];
+		for(let i=0,item;item=arr[i];i++){
+			console.log(item)			
+		}*/
 	</script>
 </body>
 </html>
+
