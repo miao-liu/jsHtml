@@ -1,0 +1,70 @@
+h5标准(10大类别):
+	离线(offline)，存储(storage)，连接(connectivity)，文件访问(file access)，语义(semantics)，音频和视频(audio/video)，3d和图形(3D/graphics)，展示(persentation)，性能(performance)和其它(nuts and bolts)
+
+Web浏览器的Javascript引擎
+Apple Safari   Nitro/Squirrel  提升字节码优化,上下文线程的本地编译器
+Google Chrome  V8    使用新一代垃圾回收机制,可确保内存高度可扩展不会发生中断
+Microsoft Internet Explorer  Chakra   注重与后台编译和高效的类型系统,比IE8快10倍
+Mozilla Firefox  结合了快速解释和源追踪树的本地编译
+Opera Carakan 采用基于寄存器的字节码和选择性本地编译的方式，
+
+Canvas....
+
+Geolocation....
+
+Communication
+1.跨文档消息通信
+iframe元素.contentWindow.postMessage(信息,url)
+向门户页面发送消息window.postMessage(信息,url)
+
+2.postMessage API
+	1.发送消息 window.postMessage(数据，目的地)
+监听消息 window.addEventListener('message',messageHandler,true);
+3.XMLHttpRequest Level 2
+	1.跨源  客户端设置请求头
+			{Origin:'http://www.example.com'}
+			服务器端设置响应头
+			{Access-Control-Allow-Origin:'http://www.example.com'}
+	1.跨源XMLHttpRequest
+	2.进度事件Progress events
+			loadstart  progress abort error load loadend
+
+WebSocket
+1.前缀  ws://   wss://
+2.通信模式  双工模式
+3.连接本身通过WebSocket接口定义message事件和send函数运行
+	采用异步事件侦听器控制连接生命周期的每个阶段
+		onopen  onmessage onclose
+5.WebSocket编程遵循异步编程模型，打开socket后，只需等待事件发生，无须主动向服务器轮询，因此需要在WebSocket对象上添加异步事件
+
+Web Workers
+1.创建,new Worker(js文件url)
+2.多个js加载执行,importScripts(js文件url,js文件url...)
+3.通信,一旦生成，通过PostMessage API传送和接收数据	
+	worker.addEventListener('message',事件函数,true)
+	worker.addEventListener('error',事件函数,true)
+4.停止线程 worker.terminate()
+
+Web Storage
+1.sessionStroage
+2.localStorage
+3.监听事件window.addEventListener('storage',事件函数,true)
+
+Web SQL...
+
+h5离线应用
+1.manifest文件
+	MIME类型是text/cache-manifest
+	头部信息是Content-type:text/cache-manifest
+2.applicationCache
+	window.applicationCache.status缓存状态，触发事件
+		0 UNCACHED(未缓存)	
+		1 IDLE(空闲)		oncached
+		2 CHECKING(检查中)	onchecking
+		3 DOWNLOADING(下载中)	ondownloading
+		4 UPDATEREADY(更新就绪)	onupdateready
+		5  OBSOLETE(过期)	onobsolete
+	其它
+		onerror  onnoupdate		onprogress
+
+p2p网络		

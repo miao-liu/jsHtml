@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">		
+		html,body{
+			width: 100%;
+			height:100%;
+			overflow: hidden;
+		}
+		div{
+			position: relative;		
+			margin: 5px auto;	
+			width: 80%;
+			height: 80%;
+			font-size: 0;
+			overflow-y: scroll;
+		}
+		img{
+			position: absolute;
+			top:0;
+			left: 0;
+		}
+	</style>
+</head>
+<body>
+	<div></div>
+	<script type="text/javascript">
+		/*
+			*设置容器
+				初始化宽度，cols =容器宽度/基宽
+			*预加载图片
+				存储图片数组
+			*设置基宽,rows =图片个数/cols
+			*创建虚拟DOM				
+			*渲染DOM
+				图片绝对定位
+		*/
+		let oBox=document.querySelector('div'),
+		oBoxW=getComputedStyle(oBox).width.replace('px',''),
+		oBoxH=getComputedStyle(oBox).height.replace('px',''),
+		oArr=[],//存放图片		
+		count=50,
+		imgW=200;//基宽		
+		function loadImg(){		
+				if(count==0){
+					compile();
+					return false;
+				}
+				let img=new Image();
+				img.src=`http://localhost:3000/images/pic (${count}).jpg`;			
+				img.onload=()=>{				
+					setScale(img)
+					oArr.push(img);
+					loadImg(--count)				
+				}					
+		}	
+		function setScale(obj){
+			let w=obj.width,
+				h=obj.height;
+			Object.defineProperty(obj,'scale',{
+				value:w/h
+			})
+		}		
+		function compile(){			
+			let freg=document.createDocumentFragment(),
+				columns=~~(oBoxW/imgW),
+				rows=Math.ceil(oArr.length/columns);
+			for(let i=0;i<rows;i++){
+				for(let j=0;j<columns;j++){
+					let index=i*columns+j,//当前坐标	
+						 target=oArr[index];
+					if(!target)return;			
+				target.width=200;
+				target.height=200/target.scale;
+				target.style.left=j*220+'px';//基于当前宽度+20(列间隔)
+				if(i!=0){//Int转换为整数 20为行间隔 h t当前图片的上方的height top 
+					let t=oArr[(i-1)*columns+j].offsetTop,
+						h=oArr[(i-1)*columns+j].height;				
+					oArr[i*columns+j].style.top=t+h+20+'px';					
+				}else
+				oArr[i*columns+j].style.top='0px';
+				
+				oBox.appendChild(oArr[i*columns+j])//放入容器
+				}				
+			}
+		}	
+		loadImg()
+	</script>
+</body>
+</html>

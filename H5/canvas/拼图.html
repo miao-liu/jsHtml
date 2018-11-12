@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		*{
+			margin: 0;
+			padding: 0;
+		}
+		li{			
+			border: 1px solid black;
+			list-style: none;
+		}
+		ul{					
+			margin: 5px auto;		
+			display: grid;
+		    grid-template-columns: repeat(4,1fr);
+		    grid-template-rows: repeat(4,1fr);
+		    cursor: pointer;
+		    opacity: 0;
+		    transition: opcaity 2s;
+		}	
+		canvas{
+			 display: none;			 
+		}			
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>	
+	<ul dragable="true">
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+		<li><img src=""></li>
+	</ul>
+	<script type="text/javascript">
+		/*
+				*拼图
+			*获取图片元素集合，顺序打乱
+			*获取一张图片，加载完成后
+				取得宽高，赋值容器,初始化容器大小
+			*遍历循环切边个数
+				取得每次切片大小 
+					获取每次绘制切片url,初始化图片
+			*显示切片布局
+			*添加拖拽事件
+				交换src
+			drawImage(图片,图片x,图片y,图片w,图片h,画布x,画布y,画布w,画布h)
+		*/		
+		const ctx=canvas.getContext('2d'),
+			  count=4;
+		let imglist=Array.from(document.querySelectorAll('img')).sort(()=>{
+			return Math.random()-Math.random();
+		});				
+		function $(query) {
+			return document.querySelector(query)
+		}
+		init('http://localhost:3000/images/7.jpeg');
+
+		function init(url){
+		 let img=new Image();
+		img.src=url;
+		img.setAttribute('crossorigin', 'anonymous');
+		img.onload=function(){
+			setContainer(this);
+			setCanvas(this)		
+			}
+		}
+		function setContainer(obj) {
+			let container=$('ul')
+			container.style.width=obj.width+'px';
+			container.style.height=obj.height+'px';
+			container.style.opacity=1;
+		}
+		function setCanvas(obj) {
+			canvas.width=obj.width/count;
+			canvas.height=obj.height/count;
+			getImg(obj);
+		}
+		function getImg(obj) {
+			let imgurl=[],
+				w=canvas.width,
+				h=canvas.height,
+				len=count*count;		
+			for(let i=0;i<len;i++){
+				let y=~~(i/3),
+					x=i%3;		
+			 ctx.drawImage(obj,x*w,y*h,w,h,0,0,w,h);
+			 imglist[i].id=i;			 
+			 imglist[i].src=canvas.toDataURL('image/png');
+			}					
+		 }
+		 function drag(e) {
+		 	let target=e.target;
+		 	target.ondragstart=function(ev){
+		 		ev.dataTransfer.setData('id',target.id)
+		 	}
+		 }
+		 function drop(e){
+		 	let target=e.target;		 	
+		 	target.ondrop=function(ev){
+		 		let id=ev.dataTransfer.getData('id'),
+		 			old=document.getElementById(id);
+		 		change(target,old);
+		 	}
+		 }
+		 function change(newVal,oldVal) {
+		 	if(!(newVal&&oldVal))return;
+		 	let cache={
+		 		id:newVal.id,
+		 		src:newVal.src
+		 	};
+		 	newVal.id=oldVal.id;
+		 	newVal.src=oldVal.src;
+
+		 	oldVal.id=cache.id;
+		 	oldVal.src=cache.src;
+		 }
+		 $('ul').addEventListener('dragstart',drag);
+		 $('ul').addEventListener('drop',drop);
+
+		document.ondragover=()=>false;
+		document.ondrop=()=>false;
+	</script>
+</body>
+</html>

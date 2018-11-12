@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+	<script type="text/javascript">
+	/*
+		*绘制图片
+		*获取图片
+			获取像素数据
+				正方形马赛克，size就是ImageData的width
+			遍历改变像素值
+	*/
+	const ctx=canvas.getContext('2d');	
+	function init(url){
+		let img=new Image();
+		img.src=url;
+		img.setAttribute('crossorigin', 'anonymous');
+		img.onload=function(){
+			canvas.width=img.width/2;
+			canvas.height=img.height/2;
+			ctx.drawImage(img,0,0,canvas.width,canvas.height);
+			let size=200,//马赛克大小
+				step=5,//粒子大小
+				x=0,
+				y=0;
+			//开始坐标 马赛克大小
+			getData(x,y,size,step);
+			}
+		}
+		function getData(x,y,size,step){
+			let imgData=ctx.getImageData(x,y,size,size),
+				data=imgData.data;		
+		for(let i=0;i<size;i+=step){			
+			for(let j=0;j<size;j+=step){
+				let colors=getXY(data,size,i,j)
+				for(let x=0;x<step;x++){
+					for(let y=0;y<step;y++){
+						setXY(data,size,i+x,j+y,colors)
+					}
+				}
+			}
+		}
+		ctx.putImageData(imgData, x, y);
+	}
+
+		function getXY(d,w,x,y){
+			let colors=[];
+			colors[0]=d[(x+y*w)*4];
+			colors[1]=d[(x+y*w)*4+1];
+			colors[2]=d[(x+y*w)*4+2];
+			colors[3]=d[(x+y*w)*4+3];
+			return colors;
+		}
+		function setXY(d,w,x,y,colors){
+			d[(x+y*w)*4]=colors[0];
+			d[(x+y*w)*4+1]=colors[1];
+			d[(x+y*w)*4+2]=colors[2];
+			d[(x+y*w)*4+3]=colors[3];			
+		}
+	init('http://localhost:3000/images/6.png');
+	</script>
+</body>
+</html>

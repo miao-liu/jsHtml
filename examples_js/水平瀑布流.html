@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>水平瀑布流</title>
+	<style type="text/css">		
+		div{
+			position: relative;
+			margin: 5px auto;
+			width: 100%;			
+			font-size: 0;			
+		}		
+		img{
+			margin: 3px;			
+		}
+	</style>
+</head>
+<body>
+	<div></div>
+	<script type="text/javascript">
+	/*
+		*获取容器宽
+			设置基高，一行几个图片
+		*预加载加载图片	
+				loadImg 传入加载图片个数		
+			获取原图片宽高求比例
+			根据图片比例，基高求基宽
+			根据基宽求高
+		*创建虚拟DOM，渲染页面
+	*/
+	let oBox=document.querySelector('div'),
+		oBoxW=getComputedStyle(oBox).width.replace('px',''),
+		oArr=[],//存放图片
+		imgH=100,//基高	
+		count=20,	
+		cols=5;
+
+	function loadImg(){		
+			if(count==0){
+				compile();
+				return false;
+			}
+			let img=new Image();
+			img.src=`http://localhost:3000/images/pic (${count}).jpg`;			
+			img.onload=()=>{				
+				setScale(img)
+				oArr.push(img);
+				loadImg(--count)				
+			}					
+	}	
+	function setScale(obj){
+		let w=obj.width,
+			h=obj.height;
+		Object.defineProperty(obj,'scale',{
+			value:w/h
+		})
+	}
+	function compile(){		
+		let freg=document.createDocumentFragment(),
+			rows=Math.ceil(oArr.length/cols);
+		for(let x=0;x<rows;x++){
+			let tmp_cols=x*cols,
+				tmp_w=0,
+				h=0;		
+			for(let i=0;i<cols;i++){			
+				let target=oArr[i+tmp_cols];
+				tmp_w+=target.scale*imgH;
+			}				
+			h=oBoxW*imgH/tmp_w;			
+			for(let j=0;j<cols;j++){
+				let target=oArr[j+tmp_cols];
+				target.height=h-10;
+				target.width=h*target.scale-10;
+				freg.appendChild(target);
+			}
+			freg.appendChild(document.createElement('br'))			
+		}	
+		oBox.appendChild(freg)
+	}
+	loadImg()	
+	window.onresize=function(){
+		oBoxW=document.body.clientWidth;
+		compile();
+	}	
+	</script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		canvas{
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="canvas"></canvas>
+	<script type="text/javascript">
+	/*
+		*绘制图片
+		*canvas添加点击事件
+			获取坐标，采取像素数据，向周围扩散
+			绘制扩散区域
+		*canvas添加鼠标事件
+			按下鼠标，记录起始坐标
+			移动鼠标，记录坐标，绘制马赛克
+			抬起鼠标，取消事件			
+	*/
+	const ctx=canvas.getContext('2d');
+	let flag=false;
+	let controll={
+		click(e){
+			let {x,y}=getXY(e),
+			imgdata=ctx.getImageData(x,y,1,1),
+			data=imgdata.data;
+			color=`rgb(${data[0]},${data[1]},${data[2]})`;
+			render(x,y,color);
+		},
+		mousedown(e){
+			flag=true;
+		},
+		mousemove(e){
+			if(!flag)return;
+			this.click(e)
+		},
+		mouseup(e){
+			flag=false;
+		}
+	};
+
+	init('http://localhost:3000/images/pic (12).jpg');
+	
+	function init(url){
+		let img=new Image();
+		img.src=url;
+		img.setAttribute('crossorigin', 'anonymous');
+		img.onload=function(){
+			canvas.width=img.width;
+			canvas.height=img.height;
+			ctx.drawImage(img,0,0,canvas.width,canvas.height);			
+		}
+	}		
+	//点击事件
+	canvas.addEventListener('click',draw)
+	//拖拽事件
+	canvas.addEventListener('mousedown',draw)
+	canvas.addEventListener('mousemove',draw)
+	canvas.addEventListener('mouseup',draw)
+
+
+	function draw(e){		
+		let type=e.type;		
+		controll[type](e);		
+	}
+	function render(x,y,color){		
+		ctx.fillStyle=color;
+		ctx.fillRect(x-10,y-10,10,10);		
+	}
+	function getXY(e) {
+		return {
+			x:e.clientX,
+			y:e.clientY
+		}
+	}
+	</script>
+</body>
+</html>

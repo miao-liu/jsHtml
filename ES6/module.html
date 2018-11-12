@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>ES6-模块</title>
+	<title>Module</title>
 </head>
 <body>
-	<script type="text/javascript">
-		module myModule from 'module.js';
-		import person from myModule;
-		console.log(person)
+	<script type="module">
+		import { color } from './module.js'
+		console.log(color)
 	</script>
 </body>
 </html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+		button{
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	<h1>simple h5 web workers example</h1>
+	<p id="support">Your rowser does not support h5 web workers</p>
+	<button id="stop">stop task</button>
+	<button id="send">post a message</button>
+	<script type="text/javascript">
+		function stopWroker(){
+			worker.terminate()
+		}
+		function messageHandler(e) {
+			console.log(e.data)
+		}
+		function errorHandler(e){
+			console.warn(e.message,e);
+		}
+		function loadDemo() {
+			if(typeof Worker !=='undefined'){
+				document.getElementById('support').innerHTML='excellent! your browser supports h5 web workers!'
+				worker=new Worker('./Web Workers/worker1.js');
+				worker.addEventListener('message',messageHandler,true);
+				worker.addEventListener('error',errorHandler,true);
+				document.getElementById('send').onclick=()=>{
+					worker.postMessage("here's a message for you");
+				}
+				document.getElementById('stop').onclick=stopWroker;
+			}
+		}
+		window.addEventListener('load',loadDemo,true);
+	</script>
+</body>
+</html>
